@@ -2,7 +2,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { Cassette, ToolDefinition } from "./cassette.js";
+import type { Cassette, ToolDefinition } from "./cassette.js";
 
 export async function recordTools(command: string, args: string[]): Promise<Cassette> {
   console.log(`[AgentMock] Connecting to MCP server via stdio: ${command} ${args.join(" ")}`);
