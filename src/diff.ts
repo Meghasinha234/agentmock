@@ -1,4 +1,4 @@
-import { Cassette, ToolDefinition } from "./interceptor.js";
+import type { Cassette, ToolDefinition } from "./cassette.js";
 
 export interface SchemaDiffResult {
   hasBreakingChanges: boolean;
@@ -17,21 +17,21 @@ export function diffCassettes(baseline: Cassette, current: Cassette): SchemaDiff
     current.tools.map((t) => [t.name, t])
   );
 
-  // 1. Check for removed tools (Breaking Change)
+  // 1. Check for removed tools
   for (const [toolName] of baselineTools) {
     if (!currentTools.has(toolName)) {
       errors.push(`[BREAKING] Tool '${toolName}' was deleted from the MCP server.`);
     }
   }
 
-  // 2. Check for added tools (Non-breaking info)
+  // 2. Check for added tools
   for (const [toolName] of currentTools) {
     if (!baselineTools.has(toolName)) {
       warnings.push(`[INFO] New tool '${toolName}' discovered.`);
     }
   }
 
-  // 3. Check schema changes on common tools
+  // 3. Check parameter regressions
   for (const [toolName, baseTool] of baselineTools) {
     const currTool = currentTools.get(toolName);
     if (!currTool) continue;
@@ -39,7 +39,6 @@ export function diffCassettes(baseline: Cassette, current: Cassette): SchemaDiff
     const baseRequired: string[] = baseTool.inputSchema?.required || [];
     const currRequired: string[] = currTool.inputSchema?.required || [];
 
-    // Check if a new required property was added (Agent won't know to supply it)
     for (const reqProp of currRequired) {
       if (!baseRequired.includes(reqProp)) {
         errors.push(
@@ -48,7 +47,6 @@ export function diffCassettes(baseline: Cassette, current: Cassette): SchemaDiff
       }
     }
 
-    // Check for parameter type mutations
     const baseProps = baseTool.inputSchema?.properties || {};
     const currProps = currTool.inputSchema?.properties || {};
 
