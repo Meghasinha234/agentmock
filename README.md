@@ -39,7 +39,3 @@ When AI agents use MCP tools (like databases, Stripe, or Jira):
 - **Zod** (Schema validation)
 - **Commander** (CLI interface)
 - **GitHub Actions** (Automated CI contract testing)
-
-## License
-
-MIT
